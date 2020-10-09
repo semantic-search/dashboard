@@ -1,13 +1,17 @@
 from fastapi import FastAPI, Depends, Form, WebSocket, WebSocketDisconnect
 import json
-from yaml_parser_service import parse
-from task_invoker import invoke
+import yaml
+
+
+def parse(yaml_file):
+    with open(yaml_file) as f:
+        config_dict = yaml.safe_load(f)
+    return config_dict
 
 
 
 app = FastAPI()
 config_dict = parse("config.yaml")
-invoke()
 active_connections = []
 
 
