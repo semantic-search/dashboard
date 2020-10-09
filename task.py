@@ -1,4 +1,3 @@
-from celery_config.celery import celery_app
 from kafka import KafkaConsumer
 from json import loads
 import requests
@@ -8,7 +7,7 @@ import globals
 url = "http://0.0.0.0:7000/update_state/"
 
 
-@celery_app.task()
+
 def consume(topic):
     topic = topic + "_d"
     print(f"topic name : {topic}")
@@ -30,7 +29,7 @@ def consume(topic):
         payload = {
             "topic_name": topic,
             "value": str(message),
-            "CLIENT_ID": globals.CLIENT_ID
+            "client_id": int(globals.CLIENT_ID)
         }
 
         requests.request("POST", url, data=payload)

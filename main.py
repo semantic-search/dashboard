@@ -4,6 +4,7 @@ from yaml_parser_service import parse
 from task_invoker import invoke
 
 
+
 app = FastAPI()
 config_dict = parse("config.yaml")
 invoke()
@@ -19,7 +20,7 @@ def config():
     return config_dict
 
 
-@app.websocket("/ws/{CLIENT_ID}")
+@app.websocket("/ws/{client_id}")
 async def websocket_endpoint(client_id: int, websocket: WebSocket, clients=Depends(get_ws_clients)):
     await websocket.accept()
     connected_client = {
