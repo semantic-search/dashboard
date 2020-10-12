@@ -6,9 +6,8 @@ Image:
   - NEURAL_TALK_2
   - IM2TXT
   Ocr:
-  - KERAS_OCR
+  - KERAS_TESSER_OCR
   - EASY_OCR
-  - TESSERACT_OCR
   Object_Detection:
   - PP_YOLO
   - YOLO_V4
