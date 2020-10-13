@@ -117,6 +117,7 @@ def helper(file, last_file, container_list, container):
                 is_a_dict["Status"] = "Complete"
             else:
                 is_a_dict["Processing_File"] = file
+                is_a_dict["Status"] = "Ongoing"
 
 
 def update_state(parent, group, container, file, last_image_file, last_audio_file):
