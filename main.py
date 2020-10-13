@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, Form, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
 import json
 from yaml_utils import get_dict, update_state
 
@@ -7,18 +8,23 @@ last_doc_image_file = str()
 last_audio_file = str()
 
 app = FastAPI()
+origins = [
+    "http://localhost:3000"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 active_connections = []
 
 
 def get_ws_clients():
     return active_connections
-
-
-@app.get("/")
-def config():
-    config_dict = get_dict()
-    return config_dict
 
 
 @app.websocket("/ws/{client_id}")
@@ -28,6 +34,10 @@ async def websocket_endpoint(client_id: int, websocket: WebSocket, clients=Depen
         "id": client_id,
         "websocket": websocket
     }
+    config_dict = get_dict()
+    await websocket.send_text(
+        json.dumps(config_dict)
+    )
     clients.append(connected_client)
     try:
         while True:
