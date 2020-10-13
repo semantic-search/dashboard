@@ -9,7 +9,8 @@ last_audio_file = str()
 
 app = FastAPI()
 origins = [
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "https://semantic-dashboard.vercel.app"
 ]
 
 app.add_middleware(
