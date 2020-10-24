@@ -1,11 +1,8 @@
 from fastapi import FastAPI, Depends, Form, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 import json
-from yaml_utils import get_dict, update_state
-
-
-last_doc_image_file = str()
-last_audio_file = str()
+from yaml_utils import update_state
+import globals
 
 app = FastAPI()
 origins = [
@@ -34,9 +31,8 @@ async def websocket_endpoint(client_id: int, websocket: WebSocket, clients=Depen
         "id": client_id,
         "websocket": websocket
     }
-    config_dict = get_dict()
     await websocket.send_text(
-        json.dumps(config_dict)
+        json.dumps(globals.final_dict)
     )
     clients.append(connected_client)
     try:
@@ -59,20 +55,18 @@ async def notify(
         client_id: int = Form(...),
         clients=Depends(get_ws_clients)
 ):
-    state_dict = update_state(
+    update_state(
         parent=parent_name,
         container=container_name,
         file=file_name,
-        group=group_name,
-        last_image_file=last_doc_image_file,
-        last_audio_file=last_audio_file
+        group=group_name
     )
     for dic in clients:
         if dic["id"] == client_id:
             ws = dic["websocket"]
             await ws.send_text(
-                   json.dumps(state_dict)
-                )
+                json.dumps(globals.final_dict)
+            )
             break
     return True
 
@@ -83,9 +77,53 @@ async def update(
         value: str = Form(...),
 ):
     if last_file == "last_doc_image":
-        global last_doc_image_file
-        last_doc_image_file = value
+        for cont in globals.image_containers:
+            globals.container_dict[cont].append(value)
     elif last_file == "last_audio_file":
-        global last_audio_file
-        last_audio_file = value
+        for cont in globals.audio_container:
+            globals.container_dict[cont].append(value)
     return True
+
+
+@app.post("/remove_file/")
+async def update(last_file: str = Form(...),
+                 value: str = Form(...),
+                 client_id: int = Form(...),
+                 clients=Depends(get_ws_clients)
+                 ):
+    if last_file == "last_doc_image":
+        for group in globals.image_groups_all:
+            for container in globals.image_containers:
+                update_state(
+                    parent="Image",
+                    group=group,
+                    container=container,
+                    file=value,
+                    remove=True
+                )
+
+
+    elif last_file == "last_audio_file":
+        for group in globals.audio_groups_all:
+            for container in globals.audio_container:
+                update_state(
+                    parent="Image",
+                    group=group,
+                    container=container,
+                    file=value,
+                    remove=True
+                )
+
+    for dic in clients:
+        if dic["id"] == client_id:
+            ws = dic["websocket"]
+            await ws.send_text(
+                json.dumps(globals.final_dict)
+            )
+            break
+    return True
+
+
+@app.get("/all_cont_files/")
+async def all_containers():
+    return globals.container_dict

@@ -1,33 +1,8 @@
 import yaml
+import globals
 
 image_data = None
 audio_data = None
-
-cap_containers = list()
-ocr_container = list()
-object_detect = list()
-scene_recog = list()
-image_recog = list()
-image_search = list()
-face_recog= list()
-
-cap_containers_list = list()
-ocr_container_list = list()
-object_detect_list = list()
-scene_recog_list = list()
-image_recog_list = list()
-image_search_list = list()
-face_recog_list = list()
-
-sound_classification = list()
-audio_fingerprinting = list()
-speech_to_text = list()
-
-sound_classification_list = list()
-audio_fingerprinting_list = list()
-speech_to_text_list = list()
-
-final_dict = dict()
 
 with open("config.yaml") as f:
     config_dict = yaml.safe_load(f)
@@ -38,204 +13,218 @@ if "Audio" in config_dict:
     audio_data = config_dict["Audio"]
 
 if 'Image_Captioning' in image_data:
-    cap_containers = image_data['Image_Captioning']
+    globals.cap_containers = image_data['Image_Captioning']
 if 'Ocr' in image_data:
-    ocr_container = image_data['Ocr']
+    globals.ocr_container = image_data['Ocr']
 if 'Object_Detection' in image_data:
-    object_detect = image_data['Object_Detection']
+    globals.object_detect = image_data['Object_Detection']
 if 'Scene_Recognition' in image_data:
-    scene_recog = image_data['Scene_Recognition']
+    globals.scene_recog = image_data['Scene_Recognition']
 if 'Image_Recognition' in image_data:
-    image_recog = image_data['Image_Recognition']
+    globals.image_recog = image_data['Image_Recognition']
 if 'Image_Search' in image_data:
-    image_search = image_data['Image_Search']
+    globals.image_search = image_data['Image_Search']
 if 'Face_Recognition' in image_data:
-    face_recog = image_data['Face_Recognition']
+    globals.face_recog = image_data['Face_Recognition']
 
 if 'Sound_Classification' in audio_data:
-    sound_classification = audio_data['Sound_Classification']
+    globals.sound_classification = audio_data['Sound_Classification']
 if 'Audio_Fingerprinting' in audio_data:
-    audio_fingerprinting = audio_data['Audio_Fingerprinting']
+    globals.audio_fingerprinting = audio_data['Audio_Fingerprinting']
 if 'Speech_To_Text' in audio_data:
-    speech_to_text = audio_data['Speech_To_Text']
+    globals.speech_to_text = audio_data['Speech_To_Text']
 
 
 def interm_gen(contname):
     interm_dict = {
         "Container": contname,
         "Processing_File": "No File",
-        "Status": "Not Started"
+        "Status": "Not Started",
+        "Remaining Files": None,
+        "Remaining Files List": None
     }
     return interm_dict
 
 
-for container in cap_containers:
+for container in globals.cap_containers:
     interm_dict = interm_gen(container)
-    cap_containers_list.append(interm_dict)
-for container in ocr_container:
+    globals.cap_containers_list.append(interm_dict)
+for container in globals.ocr_container:
     interm_dict = interm_gen(container)
-    ocr_container_list.append(interm_dict)
-for container in object_detect:
+    globals.ocr_container_list.append(interm_dict)
+for container in globals.object_detect:
     interm_dict = interm_gen(container)
-    object_detect_list.append(interm_dict)
-for container in object_detect:
+    globals.object_detect_list.append(interm_dict)
+for container in globals.object_detect:
     interm_dict = interm_gen(container)
-    object_detect_list.append(interm_dict)
-for container in scene_recog:
+    globals.object_detect_list.append(interm_dict)
+for container in globals.scene_recog:
     interm_dict = interm_gen(container)
-    scene_recog_list.append(interm_dict)
-for container in image_recog:
+    globals.scene_recog_list.append(interm_dict)
+for container in globals.image_recog:
     interm_dict = interm_gen(container)
-    image_recog_list.append(interm_dict)
-for container in image_search:
+    globals.image_recog_list.append(interm_dict)
+for container in globals.image_search:
     interm_dict = interm_gen(container)
-    image_search_list.append(interm_dict)
-for container in face_recog:
+    globals.image_search_list.append(interm_dict)
+for container in globals.face_recog:
     interm_dict = interm_gen(container)
-    face_recog_list.append(interm_dict)
+    globals.face_recog_list.append(interm_dict)
 
-for container in sound_classification:
+for container in globals.sound_classification:
     interm_dict = interm_gen(container)
-    sound_classification_list.append(interm_dict)
-for container in audio_fingerprinting:
+    globals.sound_classification_list.append(interm_dict)
+for container in globals.audio_fingerprinting:
     interm_dict = interm_gen(container)
-    audio_fingerprinting_list.append(interm_dict)
+    globals.audio_fingerprinting_list.append(interm_dict)
 
-for container in speech_to_text:
+for container in globals.speech_to_text:
     interm_dict = interm_gen(container)
-    speech_to_text_list.append(interm_dict)
+    globals.speech_to_text_list.append(interm_dict)
+
+image_dict = {
+            'Image_Captioning': globals.cap_containers_list,
+            'Ocr': globals.ocr_container_list,
+            'Object_Detection': globals.object_detect_list,
+            'Scene_Recognition': globals.scene_recog_list,
+            'Image_Recognition': globals.image_recog_list,
+            'Image_Search': globals.image_search_list,
+            'Face_Recognition': globals.face_recog_list
+        }
+audio_dict = {
+    'Sound_Classification': globals.sound_classification_list,
+    'Audio_Fingerprinting': globals.audio_fingerprinting_list,
+    'Speech_To_Text': globals.speech_to_text_list
+}
+
+globals.final_dict = {
+    'Image': image_dict,
+    'audio': audio_dict
+}
 
 
-def helper(file, last_file, container_list, container):
-    print(container)
+def helper(file, container_list, container, remove):
     for is_a_dict in container_list:
-        print(is_a_dict)
         if container == is_a_dict["Container"]:
-            print(is_a_dict)
-            if file == last_file:
-                is_a_dict["Processing_File"] = file
-                is_a_dict["Status"] = "Complete"
-            else:
-                is_a_dict["Processing_File"] = file
-                is_a_dict["Status"] = "Ongoing"
+            print(container)
+            print("is a dict")
+            print(is_a_dict["Container"])
+            if file in globals.container_dict[container]:
+                print("in match")
+                globals.container_dict[container].remove(file)
+                print(globals.container_dict[container])
+                if len(globals.container_dict[container]) == 0:
+                    print("in remove")
+                    print(len(globals.container_dict[container]))
+                    is_a_dict["Status"] = "Complete"
+                    is_a_dict["Remaining Files"] = int(len(globals.container_dict[container]))
+                    is_a_dict["Remaining Files List"] = None
+                    if not remove:
+                        is_a_dict["Processing_File"] = file
+
+                else:
+                    if remove and is_a_dict["Status"] == "Not Started":
+                        continue
+                    else:
+                        print("not remove")
+                        print(len(globals.container_dict[container]))
+                        is_a_dict["Processing_File"] = file
+                        is_a_dict["Status"] = "Ongoing"
+                        is_a_dict["Remaining Files"] = int(len(globals.container_dict[container]))
+                        is_a_dict["Remaining Files List"] = globals.container_dict[container]
 
 
-def update_state(parent, group, container, file, last_image_file, last_audio_file):
+def update_state(parent, group, container, file, remove=False):
     if parent == "Image":
         if group == "Image_Captioning":
-            print("here")
             helper(
+                remove=remove,
                 file=file,
-                last_file=last_image_file,
-                container_list=cap_containers_list,
-                container=container
+                container_list=globals.cap_containers_list,
+                container=container,
             )
         elif group == "Ocr":
             helper(
+                remove=remove,
                 file=file,
-                last_file=last_image_file,
-                container_list=ocr_container_list,
-                container=container
+                container_list=globals.ocr_container_list,
+                container=container,
             )
         elif group == "Object_Detection":
             helper(
+                remove=remove,
                 file=file,
-                last_file=last_image_file,
-                container_list=object_detect_list,
-                container=container
+                container_list=globals.object_detect_list,
+                container=container,
             )
         elif group == "Scene_Recognition":
             helper(
+                remove=remove,
                 file=file,
-                last_file=last_image_file,
-                container_list=scene_recog_list,
-                container=container
+                container_list=globals.scene_recog_list,
+                container=container,
             )
         elif group == "Image_Recognition":
             helper(
+                remove=remove,
                 file=file,
-                last_file=last_image_file,
-                container_list=image_recog_list,
-                container=container
+                container_list=globals.image_recog_list,
+                container=container,
             )
         elif group == "Image_Search":
             helper(
+                remove=remove,
                 file=file,
-                last_file=last_image_file,
-                container_list=image_search_list,
-                container=container
+                container_list=globals.image_search_list,
+                container=container,
             )
         elif group == "Face_Recognition":
             helper(
+                remove=remove,
                 file=file,
-                last_file=last_image_file,
-                container_list=face_recog_list,
-                container=container
+                container_list=globals.face_recog_list,
+                container=container,
             )
     elif parent == "Audio":
         if group == "Audio_Fingerprinting":
             helper(
+                remove=remove,
                 file=file,
-                last_file=last_audio_file,
-                container_list=audio_fingerprinting_list,
-                container=container
+                container_list=globals.audio_fingerprinting_list,
+                container=container,
             )
         elif group == "Sound_Classification":
             helper(
+                remove=remove,
                 file=file,
-                last_file=last_audio_file,
-                container_list=sound_classification_list,
-                container=container
+                container_list=globals.sound_classification_list,
+                container=container,
             )
         elif group == "Speech_To_Text":
             helper(
+                remove=remove,
                 file=file,
-                last_file=last_audio_file,
-                container_list=speech_to_text_list,
-                container=container
+                container_list=globals.speech_to_text_list,
+                container=container,
             )
     image_dict = {
-        'Image_Captioning': cap_containers_list,
-        'Ocr': ocr_container_list,
-        'Object_Detection': object_detect_list,
-        'Scene_Recognition': scene_recog_list,
-        'Image_Recognition': image_recog_list,
-        'Image_Search': image_search_list,
-        'Face_Recognition': face_recog_list
+        'Image_Captioning': globals.cap_containers_list,
+        'Ocr': globals.ocr_container_list,
+        'Object_Detection': globals.object_detect_list,
+        'Scene_Recognition': globals.scene_recog_list,
+        'Image_Recognition': globals.image_recog_list,
+        'Image_Search': globals.image_search_list,
+        'Face_Recognition': globals.face_recog_list
     }
-    audio_dict = {
-        'Sound_Classification': sound_classification_list,
-        'Audio_Fingerprinting': audio_fingerprinting_list,
-        'Speech_To_Text': speech_to_text_list
-    }
-    global final_dict
 
-    final_dict = {
+    audio_dict = {
+        'Sound_Classification': globals.sound_classification_list,
+        'Audio_Fingerprinting': globals.audio_fingerprinting_list,
+        'Speech_To_Text': globals.speech_to_text_list
+    }
+
+    globals.final_dict = {
         'Image': image_dict,
         'audio': audio_dict
     }
-    return final_dict
-
-
-def get_dict():
-    image_dict = {
-        'Image_Captioning': cap_containers_list,
-        'Ocr': ocr_container_list,
-        'Object_Detection': object_detect_list,
-        'Scene_Recognition': scene_recog_list,
-        'Image_Recognition': image_recog_list,
-        'Image_Search': image_search_list,
-        'Face_Recognition': face_recog_list
-    }
-    audio_dict = {
-        'Sound_Classification': sound_classification_list,
-        'Audio_Fingerprinting': audio_fingerprinting_list,
-        'Speech_To_Text': speech_to_text_list
-    }
-    global final_dict
-
-    final_dict = {
-        'Image': image_dict,
-        'audio': audio_dict
-    }
-    return final_dict
+    return globals.final_dict

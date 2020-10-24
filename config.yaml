@@ -37,9 +37,3 @@ Audio:
   - JASPER
   - QUARTZNET
   - DEEP_SPEECH
-Entity:
-- SPACY_LARGE
-- FLAIR
-Search:
-- B.E.R.T
-- ELASTIC_FUZZY_SEARCH
