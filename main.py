@@ -1,13 +1,18 @@
-from fastapi import FastAPI, Depends, Form, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Depends, Form, WebSocket, \
+    WebSocketDisconnect, BackgroundTasks
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 import json
 from yaml_utils import update_state
 import globals
+from db_models.models.cache_model import Cache
+import uuid
+import os
+
 
 app = FastAPI()
 origins = [
-    "http://localhost:3000",
-    "https://semantic-dashboard.vercel.app"
+    "http://localhost:3000"
 ]
 
 app.add_middleware(
@@ -128,3 +133,19 @@ async def update(last_file: str = Form(...),
 @app.get("/all_cont_files/")
 async def all_containers():
     return globals.container_dict
+
+
+def remove_file(file):
+    """Fast API Background task"""
+    os.remove(file)
+
+
+@app.get("/download/{file_id}")
+def download(file_id: str, background_tasks: BackgroundTasks):
+    cache_obj = Cache.objects.get(id=file_id)
+    extension = cache_obj.mime_type
+    new_file_to_download = str(uuid.uuid4()) + "." + extension
+    with open(new_file_to_download, 'wb') as f:
+        f.write(cache_obj.file.read())
+    background_tasks.add_task(remove_file, new_file_to_download)
+    return FileResponse(new_file_to_download)
