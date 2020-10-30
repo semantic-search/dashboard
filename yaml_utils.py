@@ -106,16 +106,9 @@ globals.final_dict = {
 def helper(file, container_list, container, remove):
     for is_a_dict in container_list:
         if container == is_a_dict["Container"]:
-            print(container)
-            print("is a dict")
-            print(is_a_dict["Container"])
             if file in globals.container_dict[container]:
-                print("in match")
                 globals.container_dict[container].remove(file)
-                print(globals.container_dict[container])
                 if len(globals.container_dict[container]) == 0:
-                    print("in remove")
-                    print(len(globals.container_dict[container]))
                     is_a_dict["Status"] = "Complete"
                     is_a_dict["Remaining Files"] = int(len(globals.container_dict[container]))
                     is_a_dict["Remaining Files List"] = None
@@ -126,8 +119,6 @@ def helper(file, container_list, container, remove):
                     if remove and is_a_dict["Status"] == "Not Started":
                         continue
                     else:
-                        print("not remove")
-                        print(len(globals.container_dict[container]))
                         is_a_dict["Processing_File"] = file
                         is_a_dict["Status"] = "Ongoing"
                         is_a_dict["Remaining Files"] = int(len(globals.container_dict[container]))

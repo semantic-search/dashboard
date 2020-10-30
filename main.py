@@ -8,13 +8,14 @@ import globals
 from db_models.models.cache_model import Cache
 import uuid
 import os
+from db_models.mongo_setup import global_init
 
 
 app = FastAPI()
 origins = [
     "http://localhost:3000"
 ]
-
+global_init()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
